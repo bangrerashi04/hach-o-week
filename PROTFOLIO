@@ -25,7 +25,7 @@
         /* Header */
         header {
             text-align: center;
-      background: linear-gradient(135deg, #a7f3d0, #6ee7b7);
+      background: #6ee7b7 ;
             color: #333;
             padding: 35px 20px;
             border-radius: 12px;

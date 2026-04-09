@@ -2,189 +2,235 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Food Menu</title>
+<title>Indian Restaurant Menu</title>
+
 <style>
-body{
-    margin:0;
-    font-family: Arial, sans-serif;
-    background: radial-gradient(circle, #111, #000);
-    color: #fff;
+body {
+    margin: 0;
+    font-family: Arial;
+    color: white;
+    text-align: center;
+    background: radial-gradient(circle, #1e3a8a, #020617);
 }
 
-.container{
-    max-width:700px;
-    margin:30px auto;
-    padding:25px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 18px;
-    box-shadow: 0 0 15px rgba(255,255,255,0.1);
+/* Corner Designs */
+body::before, body::after {
+    content: "";
+    position: fixed;
+    width: 150px;
+    height: 150px;
+    border: 3px solid cyan;
+}
+body::before { top: 10px; left: 10px; }
+body::after { bottom: 10px; right: 10px; }
+
+/* Title */
+h1 {
+    margin-top: 20px;
 }
 
-h1{
-    text-align:center;
-    color:#ffcc66;
-    margin-bottom:20px;
+/* Menu Grid */
+.menu-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
 }
 
-.menu-item{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 15px;
-    margin:8px 0;
-    border-radius:10px;
-    background: rgba(0,0,0,0.25);
-    transition: 0.2s;
+/* Cards */
+.card {
+    background: rgba(0,0,50,0.7);
+    border-radius: 15px;
+    padding: 15px;
+    box-shadow: 0 0 15px blue;
+    transition: 0.3s;
+}
+.card:hover {
+    transform: scale(1.05);
 }
 
-.menu-item:hover{
-    background: rgba(255,255,255,0.1);
+/* Buttons */
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    background: navy;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
 }
 
-.menu-item label{
-    cursor:pointer;
-    font-size:16px;
+/* Cart */
+.cart-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: black;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
 }
 
-.buttons{
-    display:flex;
-    justify-content:space-between;
-    margin-top:25px;
+/* Bubbles */
+.bubbles span {
+    position: absolute;
+    bottom: -50px;
+    width: 15px;
+    height: 15px;
+    background: cyan;
+    border-radius: 50%;
+    animation: rise 10s linear infinite;
 }
-
-button{
-    padding:10px 25px;
-    border:none;
-    border-radius:20px;
-    cursor:pointer;
-    font-size:15px;
+@keyframes rise {
+    from {transform: translateY(0);}
+    to {transform: translateY(-100vh);}
 }
-
-.confirm{ background: #28a745; color:white;}
-.next{ background: #1b4fbf; color:white;}
-.back{ background: #d35400; color:white;}
-
-button:hover{ opacity:0.9;}
 </style>
+
 </head>
 <body>
 
-<div class="container">
-    <h1 id="menu-title">🍛 South Indian Food Menu</h1>
-    <div id="menu-items">
-        <div class="menu-item"><label><input type="checkbox"> Masala Dosa</label><span>₹120</span></div>
-        <div class="menu-item"><label><input type="checkbox"> Idli Sambar</label><span>₹80</span></div>
-        <div class="menu-item"><label><input type="checkbox"> Vada</label><span>₹60</span></div>
-        <div class="menu-item"><label><input type="checkbox"> Pongal</label><span>₹100</span></div>
-        <div class="menu-item"><label><input type="checkbox"> Uttapam</label><span>₹110</span></div>
-    </div>
+<div class="bubbles"></div>
 
-    <div class="buttons">
-        <button class="confirm" onclick="confirmOrder()">Confirm</button>
-        <button class="next" onclick="nextPage()">Next Page</button>
-    </div>
+<h1 id="title">Menu</h1>
+
+<div class="cart-btn" onclick="viewCart()">🛒 Cart</div>
+
+<div class="menu-container" id="menu"></div>
+
+<div>
+    <button onclick="prevPage()">⬅ Back</button>
+    <button onclick="nextPage()">Next ➡</button>
+    <button onclick="confirmOrder()">✅ Confirm</button>
 </div>
 
 <script>
-var currentMenu = 'south';
+let currentPage = 0;
+const pages = ["Starters", "Lunch", "Dessert"];
 
-// second south indian menu
-var southMenu2 = [
-    {name:'Plain Dosa', price:90},
-    {name:'Rava Dosa', price:130},
-    {name:'Curd Rice', price:90},
-    {name:'Lemon Rice', price:80},
-    {name:'Filter Coffee', price:40}
-];
+/* Indian Menu Data */
+const menuData = {
 
-function nextPage(){
-    if(currentMenu == 'south'){
-        currentMenu = 'south2';
-        document.getElementById('menu-title').innerText = '🍽️ South Indian Specials';
-        var container = document.getElementById('menu-items');
-        container.innerHTML = '';
+Starters: [
+{name:"Paneer Tikka", price:180},
+{name:"Chicken Tikka", price:220},
+{name:"Veg Manchurian", price:160},
+{name:"Chicken Manchurian", price:200},
+{name:"Spring Rolls", price:150},
+{name:"Hara Bhara Kebab", price:170},
+{name:"Chilli Paneer", price:190},
+{name:"Chilli Chicken", price:230},
+{name:"Aloo Tikki", price:120},
+{name:"Samosa Plate", price:100},
+{name:"Papdi Chaat", price:130},
+{name:"Dahi Puri", price:140}
+],
 
-        for(var i=0;i<southMenu2.length;i++){
-            var div = document.createElement('div');
-            div.className = 'menu-item';
+Lunch: [
+{name:"Butter Chicken", price:320},
+{name:"Paneer Butter Masala", price:280},
+{name:"Dal Makhani", price:250},
+{name:"Veg Biryani", price:260},
+{name:"Chicken Biryani", price:300},
+{name:"Jeera Rice", price:180},
+{name:"Tandoori Roti", price:30},
+{name:"Butter Naan", price:50},
+{name:"Mix Veg Curry", price:240},
+{name:"Chole Bhature", price:200},
+{name:"Rajma Chawal", price:220},
+{name:"Kadai Paneer", price:290}
+],
 
-            var lbl = document.createElement('label');
-            var chk = document.createElement('input');
-            chk.type = 'checkbox';
-            lbl.appendChild(chk);
-            lbl.appendChild(document.createTextNode(' ' + southMenu2[i].name));
+Dessert: [
+{name:"Gulab Jamun", price:120},
+{name:"Rasgulla", price:110},
+{name:"Kaju Katli", price:200},
+{name:"Jalebi", price:100},
+{name:"Rabri", price:150},
+{name:"Rasmalai", price:140},
+{name:"Ice Cream", price:90},
+{name:"Kulfi", price:80},
+{name:"Gajar Halwa", price:130},
+{name:"Moong Dal Halwa", price:160},
+{name:"Falooda", price:170},
+{name:"Chocolate Brownie", price:180}
+]
 
-            var spn = document.createElement('span');
-            spn.innerText = '₹' + southMenu2[i].price;
+};
 
-            div.appendChild(lbl);
-            div.appendChild(spn);
-            container.appendChild(div);
-        }
+/* Load Menu */
+function loadMenu() {
+    const type = pages[currentPage];
+    document.getElementById("title").innerText = type + " Menu";
 
-        var btns = document.querySelector('.buttons');
-        if(!document.querySelector('.back')){
-            var backBtn = document.createElement('button');
-            backBtn.className = 'back';
-            backBtn.innerText = 'Back';
-            backBtn.onclick = previousPage;
-            btns.insertBefore(backBtn, btns.querySelector('.next'));
-        }
+    const container = document.getElementById("menu");
+    container.innerHTML = "";
+
+    menuData[type].forEach(item => {
+        container.innerHTML += `
+        <div class="card">
+            <h3>${item.name}</h3>
+            <p>₹${item.price}</p>
+            <button onclick="addToCart('${item.name}', ${item.price})">Add</button>
+        </div>`;
+    });
+}
+
+/* Navigation */
+function nextPage() {
+    if (currentPage < pages.length - 1) {
+        currentPage++;
+        loadMenu();
+    }
+}
+function prevPage() {
+    if (currentPage > 0) {
+        currentPage--;
+        loadMenu();
     }
 }
 
-function previousPage(){
-    currentMenu = 'south';
-    document.getElementById('menu-title').innerText = '🍛 South Indian Food Menu';
-    var container = document.getElementById('menu-items');
-    container.innerHTML = '';
-
-    var southMenu1 = [
-        {name:'Masala Dosa', price:120},
-        {name:'Idli Sambar', price:80},
-        {name:'Vada', price:60},
-        {name:'Pongal', price:100},
-        {name:'Uttapam', price:110}
-    ];
-
-    for(var i=0;i<southMenu1.length;i++){
-        var div = document.createElement('div');
-        div.className = 'menu-item';
-
-        var lbl = document.createElement('label');
-        var chk = document.createElement('input');
-        chk.type = 'checkbox';
-        lbl.appendChild(chk);
-        lbl.appendChild(document.createTextNode(' ' + southMenu1[i].name));
-
-        var spn = document.createElement('span');
-        spn.innerText = '₹' + southMenu1[i].price;
-
-        div.appendChild(lbl);
-        div.appendChild(spn);
-        container.appendChild(div);
-    }
-
-    var backBtn = document.querySelector('.back');
-    if(backBtn) backBtn.remove();
+/* Cart */
+function addToCart(name, price) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cart.push({name, price});
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("Added to cart");
 }
 
-function confirmOrder(){
-    var selected = [];
-    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    for(var i=0;i<checkboxes.length;i++){
-        if(checkboxes[i].checked){
-            selected.push(checkboxes[i].parentNode.textContent.trim());
-        }
-    }
+function viewCart() {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    let total = 0;
+    let msg = "Cart:\n";
 
-    if(selected.length>0){
-        alert('You chose: ' + selected.join(', '));
-    }else{
-        alert('No items picked 😅');
+    cart.forEach(item => {
+        msg += item.name + " - ₹" + item.price + "\n";
+        total += item.price;
+    });
+
+    alert(msg + "\nTotal: ₹" + total);
+}
+
+function confirmOrder() {
+    alert("Order Confirmed!");
+    localStorage.removeItem("cart");
+}
+
+/* Bubbles */
+function createBubbles() {
+    const container = document.querySelector(".bubbles");
+    for (let i = 0; i < 25; i++) {
+        let span = document.createElement("span");
+        span.style.left = Math.random() * 100 + "vw";
+        span.style.animationDuration = (5 + Math.random() * 5) + "s";
+        container.appendChild(span);
     }
 }
+
+/* Init */
+loadMenu();
+createBubbles();
 </script>
+
 </body>
 </html>
-a
